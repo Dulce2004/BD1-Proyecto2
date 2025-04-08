@@ -2,12 +2,12 @@
 
 Este proyecto simula un sistema de reservas concurrentes a una base de datos PostgreSQL, utilizando distintos niveles de aislamiento para observar el comportamiento de la concurrencia y la consistencia.
 
-## 🧑‍💻 Autores y contexto
+## 🧑‍💻 Autores y contexto  
 
-Dulce Rebeca Ambrosio Jimenez 231143
-Maria Jose Giron Isidro 23559
-Paula De Leon 23202
-Leonardo Dufrey Mejia Mejia 23648
+Dulce Rebeca Ambrosio Jimenez 231143   
+Maria Jose Giron Isidro 23559  
+Paula De Leon 23202  
+Leonardo Dufrey Mejia Mejia 23648  
 
 Durante el desarrollo del proyecto, trabajamos de manera presencial en clase. Debido a que nuestra compañera **Dulce** tenía experiencia previa con Docker, decidimos enviarle nuestras partes del código por separado para que ella las integrara y preparara el entorno completo en Docker. Por ello, **el primer commit del repositorio refleja ya la integración total del sistema**.
 
@@ -63,10 +63,10 @@ Si quieren modificar los parametros para la simulacion se debe cambiar el compos
 En esta linea:
 command: ["go", "run", "main.go", "--users=100", "--isolation=serializable"]
 
-Los niveles de aislamiento válidos son:
-read committed
-repeatable read
-serializable
+Los niveles de aislamiento válidos son:  
+read committed  
+repeatable read  
+serializable  
 
 Solo tenemos un asiento, ya que lo manejamos segùn el id y queriamos ver su concurrencia
   
