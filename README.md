@@ -49,14 +49,14 @@ Sigue estos pasos para levantar los servicios y ejecutar la simulación automát
   Compila y ejecuta la aplicación en Go con 5000 usuarios y el nivel de aislamiento "repeatable    read". 
 
   **SALIDA**
-  === Resultados ===
-Nivel de Aislamiento: repeatable read
-Usuarios Simulados: 5000
-Reservas Exitosas: 1
-Conflictos: 4999
-Errores: 0
-Estado Final del Asiento: reservado
-Reservas Confirmadas: 1
+  === Resultados ===  
+Nivel de Aislamiento: repeatable read  
+Usuarios Simulados: 5000  
+Reservas Exitosas: 1  
+Conflictos: 4999  
+Errores: 0  
+Estado Final del Asiento: reservado  
+Reservas Confirmadas: 1  
 
 Si quieren modificar los parametros para la simulacion se debe cambiar el compose de docker, el nombre exacto dedl archivo es docker-compose.yml 
 
