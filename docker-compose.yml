@@ -27,4 +27,4 @@ services:
       DB_USER: admin
       DB_PASSWORD: admin
       DB_NAME: reservas_db
-    command: ["go", "run", "main.go", "--users=5000", "--isolation=repeatable read"]
+    command: ["go", "run", "main.go", "--users=30", "--isolation=serializable"]

@@ -2,6 +2,7 @@ package main
 
 import (
 	"context"
+	"time"
 	"database/sql"
 	"flag"
 	"fmt"
@@ -46,7 +47,8 @@ func main() {
 	// Variables para contar los resultados.
 	var success, conflicts, errors int64
 	var wg sync.WaitGroup // Usar un grupo de espera para sincronizar las goroutines.
-
+	
+	var totalDuration int64
 	wg.Add(numUsers) // Añadir la cantidad de usuarios al grupo de espera.
 
 	// Lanzar goroutines para simular la concurrencia de usuarios reservando el asiento.
@@ -54,14 +56,14 @@ func main() {
 		userID := (i % 8) + 1 // IDs de usuario cíclicos del 1 al 8.
 		go func(uid int) {
 			defer wg.Done()                                                        // Decrementar el contador del grupo de espera cuando termine la goroutine.
-			reserveSeat(db, uid, seatID, *isoLevel, &success, &conflicts, &errors) // Llamar a la función de reserva de asiento.
+			reserveSeat(db, uid, seatID, *isoLevel, &success, &conflicts, &errors, &totalDuration) // Llamar a la función de reserva de asiento.
 		}(userID)
 	}
 
 	wg.Wait() // Esperar que todas las goroutines terminen.
 
 	// Imprimir los resultados finales de la simulación.
-	printResults(db, seatID, isolationLevel, numUsers, success, conflicts, errors)
+	printResults(db, seatID, isolationLevel, numUsers, success, conflicts, errors, totalDuration)
 }
 
 // parseIsolationLevel convierte el nivel de aislamiento de string a un valor de sql.IsolationLevel.
@@ -116,7 +118,14 @@ func resetSeat(db *sql.DB, seatID int) error {
 }
 
 // reserveSeat simula el proceso de un usuario reservando un asiento.
-func reserveSeat(db *sql.DB, userID, seatID int, isoLevel sql.IsolationLevel, success, conflicts, errors *int64) {
+func reserveSeat(db *sql.DB, userID, seatID int, isoLevel sql.IsolationLevel, success, conflicts, errors, totalDuration *int64)	{
+	start := time.Now()
+
+	defer func() {
+		duration := time.Since(start).Milliseconds()
+		atomic.AddInt64(totalDuration, duration)
+	}()
+
 	ctx := context.Background()                                     // Crear un contexto de ejecución para la transacción.
 	tx, err := db.BeginTx(ctx, &sql.TxOptions{Isolation: isoLevel}) // Iniciar una transacción con el nivel de aislamiento especificado.
 	if err != nil {
@@ -187,7 +196,7 @@ func isSerializationError(err error) bool {
 }
 
 // printResults imprime los resultados finales de la simulación de reservas.
-func printResults(db *sql.DB, seatID int, isolation string, users int, s, c, e int64) {
+func printResults(db *sql.DB, seatID int, isolation string, users int, s, c, e int64, totalDuration int64) {
 	var estado string
 	// Obtener el estado final del asiento.
 	db.QueryRow("SELECT estado FROM Asiento WHERE id_asiento = $1", seatID).Scan(&estado)
@@ -205,4 +214,10 @@ func printResults(db *sql.DB, seatID int, isolation string, users int, s, c, e i
 	fmt.Printf("Errores: %d\n", e)
 	fmt.Printf("Estado Final del Asiento: %s\n", estado)
 	fmt.Printf("Reservas Confirmadas: %d\n", count)
+
+	if users > 0 {
+		average := float64(totalDuration) / float64(users)
+		fmt.Printf("Tiempo Promedio por Usuario: %.2f ms\n", average)
+	}
+
 }
